@@ -11,7 +11,7 @@ import (
 	"bufio"
 	log "github.com/cihub/seelog"
 	goflags "github.com/jessevdk/go-flags"
-	pb "gopkg.in/cheggaaa/pb.v1"
+	//pb "gopkg.in/cheggaaa/pb.v1"
 	"os"
 	"io"
 )
@@ -53,8 +53,8 @@ func main() {
 
 	var srcESVersion *ClusterVersion
 	// create a progressbar and start a docCount
-	var outputBar *pb.ProgressBar
-	var fetchBar = pb.New(1).Prefix("Scroll")
+	//var outputBar *pb.ProgressBar
+	//var fetchBar = pb.New(1).Prefix("Scroll")
 
 	wg := sync.WaitGroup{}
 
@@ -134,9 +134,9 @@ func main() {
 		}
 
 		if(totalSize>0){
-			fetchBar.Total=int64(totalSize)
-			fetchBar.ShowBar=true
-			outputBar = pb.New(totalSize).Prefix("Output ")
+			//fetchBar.Total=int64(totalSize)
+			//fetchBar.ShowBar=true
+			//outputBar = pb.New(totalSize).Prefix("Output ")
 		}
 
 
@@ -161,18 +161,18 @@ func main() {
 			lineCount += 1
 		}
 		log.Trace("file line,", lineCount)
-		fetchBar := pb.New(lineCount).Prefix("Read")
-		outputBar = pb.New(lineCount).Prefix("Output ")
+		//fetchBar := pb.New(lineCount).Prefix("Read")
+		//outputBar = pb.New(lineCount).Prefix("Output ")
 		f.Close()
 
 		go migrator.NewFileReadWorker(fetchBar,&wg)
 	}
 
 	// start pool
-	pool, err := pb.StartPool(fetchBar, outputBar)
-	if err != nil {
-		panic(err)
-	}
+	//pool, err := pb.StartPool(fetchBar, outputBar)
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	//dealing with output
 	if len(c.TargetEs) > 0 {
@@ -389,7 +389,7 @@ func main() {
 	//start es bulk thread
 	if len(c.TargetEs) > 0 {
 		log.Debug("start es bulk workers")
-		outputBar.Prefix("Bulk")
+		//outputBar.Prefix("Bulk")
 		var docCount int
 		wg.Add(c.Workers)
 		for i := 0; i < c.Workers; i++ {
@@ -397,15 +397,15 @@ func main() {
 		}
 	} else if len(c.DumpOutFile) > 0 {
 		// start file write
-		outputBar.Prefix("Write")
+		//outputBar.Prefix("Write")
 		wg.Add(1)
 		go migrator.NewFileDumpWorker(outputBar, &wg)
 	}
 
 	wg.Wait()
-	outputBar.Finish()
+	//outputBar.Finish()
 	// close pool
-	pool.Stop()
+	//pool.Stop()
 
 	log.Info("data migration finished.")
 }
